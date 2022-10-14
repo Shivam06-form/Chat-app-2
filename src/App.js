@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { useContext, useEffect } from "react";
+import { database } from "./Components/Auth/firebase";
+import AuthContext from "./Components/Auth/Login-Auth";
+import MainContent from "./Components/MainContent/MainContent";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const AuthCtx = useContext(AuthContext);
+  const getItem = localStorage.getItem("userName");
+
+  useEffect(() => {
+    database.ref(`Users/${getItem}`).on("value", (value) => {
+      if (getItem && value) {
+        AuthCtx.Login(
+          value.val().Name ? value.val().Name : "",
+          value.val().fakeId ? value.val().fakeId : "",
+          value.val().id ? value.val().id : ""
+        );
+      }
+    });
+  }, [AuthCtx.fakeId, getItem]);
+
+  return <MainContent />;
 }
 
 export default App;

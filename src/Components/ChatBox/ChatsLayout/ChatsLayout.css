@@ -1,0 +1,47 @@
+.chat-layout {
+  width: 65%;
+  height: 100vh;
+  color: purple;
+  font-weight: bolder;
+  font-family: sans-serif;
+  /* background-color: aqua; */
+  border-style: groove;
+  border-top: none;
+  border-bottom: none;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.send-message {
+  height: 5.6%;
+  width: 100%;
+  border-style: groove;
+  overflow: hidden;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+/*  */
+
+.send-message input {
+  font-size: 23px;
+  font-family: monospace;
+}
+
+.icon {
+  cursor: pointer;
+}
+
+.render-msg {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: auto;
+  margin-top: 4%;
+  height: 80vh;
+  overflow-y: hidden;
+  overflow-y: scroll;
+}
