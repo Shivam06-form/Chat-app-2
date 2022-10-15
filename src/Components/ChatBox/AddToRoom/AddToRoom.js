@@ -18,13 +18,16 @@ const ChatRoom = () => {
   const [islist, setIslist] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState("");
   const AuthCtx = useContext(AuthContext);
+  const [userImg, setUserImg] = useState("");
 
   useEffect(() => {
     let UersList = [];
     database.ref(`ChatRoom/${AuthCtx.ChatRoomId}`).on("value", (value) => {
-      Object.values(value.val().Members).forEach((member) => {
-        UersList.push(member);
-      });
+      if (value.val()) {
+        Object.values(value.val().Members).forEach((member) => {
+          UersList.push(member);
+        });
+      }
       setIslist(UersList);
     });
   }, [showPeople, AuthCtx.lastMessgae, AuthCtx.ChatRoomId]);
@@ -32,10 +35,22 @@ const ChatRoom = () => {
   useEffect(() => {
     let isLogged = [];
     database.ref(`Status`).on("child_added", (status) => {
-      isLogged.push(status.val());
-      setIsLoggedIn(isLogged);
+      if (status) {
+        console.log(status.val());
+        isLogged.push(status.val());
+        setIsLoggedIn(isLogged);
+      }
     });
   }, [AuthCtx.id]);
+
+  useEffect(() => {
+    database.ref(`/UsersImage`).on("value", (value1) => {
+      // console.log(value1.val());
+      if (value1.val()) {
+        setUserImg(value1.val());
+      }
+    });
+  }, [AuthCtx.ChatRoomId]);
 
   const RenderUsers = (islist || []).map((member) => {
     const filter = (isLoggedIn || []).map(
@@ -59,8 +74,8 @@ const ChatRoom = () => {
             ></div>
             <img
               src={
-                member.image
-                  ? member.image
+                userImg[member.Memberid]
+                  ? userImg[member.Memberid].image
                   : `https://c4.wallpaperflare.com/wallpaper/480/539/646/zipper-hero-hero-dc-comics-shazam-hd-wallpaper-preview.jpg`
               }
               alt="pic"
@@ -102,8 +117,9 @@ const ChatRoom = () => {
         )}
       </div>
       {showPeople && <div className="people-list">{RenderUsers}</div>}{" "}
-      <AddPeople />
-      <Photos />
+      {AuthCtx.ChatRoomId && <AddPeople />}
+      {/* {!AuthCtx.ChatRoomId && <h4>Add Chat Room 🏠</h4>} */}
+      {AuthCtx.ChatRoomId && <Photos />}
       <Options />
     </div>
   );

@@ -17,14 +17,24 @@ const ChatRoom = () => {
     let CHATROOM = [];
 
     database.ref("ChatRoom").on("child_added", (value) => {
-      CHATROOM.push(value.val());
+      if (value) {
+        CHATROOM.push(value.val());
+      }
 
-      setRenderChats(CHATROOM);
-      if (!AuthCtx.ChatRoomName) {
+      if (!AuthCtx.ChatRoomId && value.val().Members[AuthCtx.fakeId]) {
         AuthCtx.ChatRoom(value.val().id, value.val().Chatroom);
       }
+      setRenderChats(CHATROOM);
     });
-  }, [AuthCtx, AuthCtx.ChatRoomId]);
+  }, [AuthCtx.ChatRoomId, Chatroom ,AuthCtx.lastMessgae]);
+
+  // useEffect(() => {
+  //   if (renderChats) {
+  //     const membersList =
+  //       renderChats[renderChats.length - 1].Members[AuthCtx.fakeId];
+  //     AuthCtx.ChatRoom(membersList.id, membersList.Chatroom);
+  //   }
+  // }, []);
 
   useEffect(() => {
     database
@@ -43,8 +53,6 @@ const ChatRoom = () => {
         CHATROOM.push(member);
       });
     }
-
-    // console.log(chatRoom.Lastmessage);
 
     const filterChats = CHATROOM.map(
       (chatRoom) => chatRoom.Memberid === AuthCtx.fakeId
@@ -81,25 +89,29 @@ const ChatRoom = () => {
               )}
             </div>
             <div className="room-title-message">
-              {!chatRoom.Lastmessage.includes("firebasestorage") && (
-                <div>{chatRoom.Lastmessage}</div>
-              )}
-              <div>
-                {chatRoom.Lastmessage.includes("firebasestorage") && (
-                  <img
-                    src={chatRoom.Lastmessage}
-                    alt={chatRoom.Lastmessage}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50px",
-                    }}
-                  />
+              {chatRoom.Lastmessage &&
+                !chatRoom.Lastmessage.includes("firebasestorage") && (
+                  <div>{chatRoom.Lastmessage}</div>
                 )}
-              </div>
               <div>
-                {chatRoom.date.Date} {chatRoom.date.Month}
+                {chatRoom.Lastmessage &&
+                  chatRoom.Lastmessage.includes("firebasestorage") && (
+                    <img
+                      src={chatRoom.Lastmessage}
+                      alt={chatRoom.Lastmessage}
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50px",
+                      }}
+                    />
+                  )}
               </div>
+              {chatRoom.date && (
+                <div>
+                  {chatRoom.date.Date} {chatRoom.date.Month}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -121,25 +133,30 @@ const ChatRoom = () => {
             setIsChatroom(e.target.value);
           }}
         />
-        <button
-          className="btn btn-primary"
-          onClick={(e) => {
-            e.preventDefault();
-            database.ref(`ChatRoom/${id}`).set({
-              Chatroom: Chatroom,
-              id: id,
-              Date: new Date().toISOString(),
-              Name: AuthCtx.userName,
-            });
-            database.ref(`ChatRoom/${id}/Members/${AuthCtx.fakeId}`).set({
-              Memberid: AuthCtx.fakeId,
-              Owner: true,
-              Name: AuthCtx.userName,
-            });
-          }}
-        >
-          +
-        </button>
+        {
+          <button
+            disabled={!Chatroom}
+            className="btn btn-primary"
+            onClick={(e) => {
+              e.preventDefault();
+              database.ref(`ChatRoom/${id}`).set({
+                Chatroom: Chatroom,
+                id: id,
+                Date: new Date().toISOString(),
+                Name: AuthCtx.userName,
+              });
+              database.ref(`ChatRoom/${id}/Members/${AuthCtx.fakeId}`).set({
+                Memberid: AuthCtx.fakeId,
+                Owner: true,
+                Name: AuthCtx.userName,
+              });
+
+              setIsChatroom("");
+            }}
+          >
+            +
+          </button>
+        }
       </div>
     </div>
   );

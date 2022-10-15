@@ -8,6 +8,7 @@ const Login = () => {
   const AuthCtx = useContext(AuthContext);
   const [Email, isEmail] = useState("");
   const [LoggedIn, isLoggedIn] = useState(false);
+  const [Error, isError] = useState("");
   const [Password, isPassword] = useState("");
 
   const EmailandPasswordSignUp = async (e) => {
@@ -25,7 +26,7 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        isError(error.message);
       });
   };
 
@@ -42,7 +43,7 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        isError(error.message);
       });
   };
 
@@ -72,8 +73,15 @@ const Login = () => {
           type="password"
           placeholder="Re Enter Your Password 🔑"
         /> */}
+        {Error && (
+          <h5
+            style={{ backgroundColor: "wheat", color: "white", padding: "4px" }}
+          >
+            {Error}
+          </h5>
+        )}
         {!LoggedIn && (
-          <button
+          <h5
             className="btn reviews__text "
             style={{ color: "white", fontSize: "18px" }}
             onClick={(e) => {
@@ -81,11 +89,12 @@ const Login = () => {
               isLoggedIn(true);
             }}
           >
+            {" "}
             SignUp
-          </button>
+          </h5>
         )}
         {LoggedIn && (
-          <button
+          <h5
             className="btn reviews__text "
             style={{ color: "white", fontSize: "18px" }}
             onClick={(e) => {
@@ -94,7 +103,7 @@ const Login = () => {
             }}
           >
             SignIn
-          </button>
+          </h5>
         )}
         <button
           disabled={!Email && !Password}
@@ -103,10 +112,10 @@ const Login = () => {
           onClick={(e) => {
             e.preventDefault();
             console.log("LoggedIn");
-            LoggedIn ? EmailandPasswordSignUp() : EmailandPasswordSignin();
+            LoggedIn ? EmailandPasswordSignin() : EmailandPasswordSignUp();
           }}
         >
-          START CHATTING ({!LoggedIn ? "SignIn" : "SignUp"})
+          START CHATTING ({LoggedIn ? "SignIn" : "SignUp"})
         </button>
       </form>
     </div>

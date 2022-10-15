@@ -24,10 +24,12 @@ const Options = () => {
   };
 
   useEffect(() => {
-    database.ref(`UsersImage/${AuthCtx.id}`).on("value", (value) => {
-      setAvavtar(value.val().image);
+    database.ref(`UsersImage/${AuthCtx.fakeId}`).on("value", (value) => {
+      if (value.val()) {
+        setAvavtar(value.val().image);
+      }
     });
-  }, [AuthCtx.id]);
+  }, [AuthCtx.fakeId, AuthCtx.id]);
 
   return (
     <Fragment>
@@ -79,13 +81,13 @@ const Options = () => {
                     .put(e.target.files[0])
                     .then(async (data) => {
                       await data.ref.getDownloadURL().then((downloadURL) => {
+                        // database
+                        //   .ref(
+                        //     `ChatRoom/${AuthCtx.ChatRoomId}/Members/${AuthCtx.fakeId}/image`
+                        //   )
+                        //   .set(downloadURL);
                         database
-                          .ref(
-                            `ChatRoom/${AuthCtx.ChatRoomId}/Members/${AuthCtx.fakeId}/image`
-                          )
-                          .set(downloadURL);
-                        database
-                          .ref(`UsersImage/${AuthCtx.id}/image`)
+                          .ref(`UsersImage/${AuthCtx.fakeId}/image`)
                           .set(downloadURL);
                         setUserImg(false);
                       });
